@@ -2,6 +2,55 @@ import tkinter as tk
 from tkinter import *
 from functools import partial
 
+class myApp(tk.Tk):
+    def __init__(self,*args,**kwargs):
+        tk.Tk.__init__(self,*args,**kwargs)
+        self.title("Tic Tac Toe")
+        self.resizable(width=False, height=False)
+        self.buttons = {}
+        self.turn = 0
+
+        self.select = Frame(self)
+        self.select.grid()
+        label = Label(self.select,text="How do you want to play?")
+        multiplayer = Button(self.select,text="1 vs 1",command=lambda: self.start(1))
+        ai = Button(self.select,text="vs ai",command=lambda: self.start(0))
+        label.grid(row=0,column=0,columnspan=2)
+        multiplayer.grid(row=1,column=0)
+        ai.grid(row=1,column=1)
+    def start(self,mode):
+        self.select.destroy()
+        self.mode=mode
+        for x in range(9):
+            i = int(x/3)
+            j = x%3
+            frame = Frame(root,height=128,width=128)
+            frame.pack_propagate(0)
+            frame.grid(row=i,column=j)
+            self.buttons[x] = custButton(i,j,frame)
+            self.buttons[x].set("-")
+            self.buttons[x].configure(command=partial(self.press,x),font=("","75"))
+            frame.grid(row=i,column=j)
+            self.buttons[x].pack(fill=BOTH, expand=1)
+    def press(self,button):
+        if self.turn:
+            self.buttons[button].set("O")
+            self.buttons[button].configure(state=DISABLED)
+        else:
+            self.buttons[button].set("X")
+            self.buttons[button].configure(state=DISABLED)
+        if self.mode:
+            if self.winCheck()==0:
+                print("x wins")
+            if self.winCheck()==1:
+                print("o wins")
+            if self.winCheck()==2:
+                print("draw")
+              
+        self.turn = not self.turn
+    def winCheck(self):
+        if(self.buttons[0].get()==self.buttons[1].get() and self.buttons[1].get()==self.buttons[2].get() and self.buttons[0].get()!="-"):
+
 class custButton(tk.Button):
     def __init__(self,row,col,master=None,**kwargs):
         self.var = tk.StringVar()
@@ -9,37 +58,6 @@ class custButton(tk.Button):
         self.row=row
         self.col=col
         self.get, self.set = self.var.get, self.var.set
-    def press(self,mode):
-        print(str(self.row)+" "+str(self.col)+" "+str(mode))
 
-def game(mode):
-    for i in range(3):
-        for j in range(3):
-            frame = Frame(root,height=128,width=128)
-            frame.pack_propagate(0)
-            frame.grid(row=i,column=j)
-            button = custButton(i,j,frame)
-            button.set("-")
-            button.configure(command=partial(button.press, mode),font=("","75"))
-            frame.grid(row=i,column=j)
-            button.pack(fill=BOTH, expand=1)
-
-def start(mode,select):
-    select.destroy()
-    game(mode)
-
-root = Tk()
-root.title("Tic Tac Toe")
-root.resizable(width=False, height=False)
-
-select = Frame(root)
-select.grid()
-
-label = Label(select,text="How do you want to play?")
-multiplayer = Button(select,text="1 vs 1",command=lambda: start(1,select))
-ai = Button(select,text="vs ai",command=lambda: start(0,select))
-label.grid(row=0,column=0,columnspan=2)
-multiplayer.grid(row=1,column=0)
-ai.grid(row=1,column=1)
-
+root = myApp()
 root.mainloop()
