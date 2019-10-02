@@ -46,10 +46,26 @@ class myApp(tk.Tk):
                 print("o wins")
             if self.winCheck()==2:
                 print("draw")
-              
+
         self.turn = not self.turn
-    def winCheck(self):
+    def winCheck(self):         #Doesnt work. Always returns x wins
         if(self.buttons[0].get()==self.buttons[1].get() and self.buttons[1].get()==self.buttons[2].get() and self.buttons[0].get()!="-"):
+            return self.buttons[0].get()=="O"
+        if(self.buttons[3].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[5].get() and self.buttons[0].get()!="-"):
+            return self.buttons[3].get()=="O"
+        if(self.buttons[6].get()==self.buttons[7].get() and self.buttons[7].get()==self.buttons[8].get() and self.buttons[0].get()!="-"):
+            return self.buttons[6].get()=="O"
+        if(self.buttons[0].get()==self.buttons[3].get() and self.buttons[3].get()==self.buttons[6].get() and self.buttons[0].get()!="-"):
+            return self.buttons[0].get()=="O"
+        if(self.buttons[1].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[7].get() and self.buttons[0].get()!="-"):
+            return self.buttons[1].get()=="O"
+        if(self.buttons[2].get()==self.buttons[5].get() and self.buttons[5].get()==self.buttons[8].get() and self.buttons[0].get()!="-"):
+            return self.buttons[2].get()=="O"
+        if(self.buttons[0].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[8].get() and self.buttons[0].get()!="-"):
+            return self.buttons[0].get()=="O"
+        if(self.buttons[2].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[6].get() and self.buttons[0].get()!="-"):
+            return self.buttons[2].get()=="O"
+
 
 class custButton(tk.Button):
     def __init__(self,row,col,master=None,**kwargs):
