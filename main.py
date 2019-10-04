@@ -41,39 +41,45 @@ class myApp(tk.Tk):
         else:
             self.buttons[button].set("X")
             self.buttons[button].configure(state=DISABLED)
-        if self.mode:
-            if self.winCheck()==0:
-                self.popupMsg("X wins")
-                return
-            if self.winCheck()==1:
-                self.popupMsg("O wins")
-                return
-            if self.winCheck()==2:
-                self.popupMsg("draw")
-                return
         self.turn = not self.turn
+        if self.winCheck()==-1:
+            self.popupMsg("X wins")
+        if self.winCheck()==1:
+            self.popupMsg("O wins")
+        if self.winCheck()==0:
+            self.popupMsg("draw")
+        if self.mode==0:
+            print("test")
 
     def winCheck(self):
         if(self.buttons[0].get()==self.buttons[1].get() and self.buttons[1].get()==self.buttons[2].get() and self.buttons[0].get()!="-"):
-            return self.buttons[0].get()=="O"
+            if self.buttons[0].get()=="O": return 1
+            else: return -1
         if(self.buttons[3].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[5].get() and self.buttons[3].get()!="-"):
-            return self.buttons[3].get()=="O"
+            if self.buttons[3].get()=="O": return 1
+            else: return -1
         if(self.buttons[6].get()==self.buttons[7].get() and self.buttons[7].get()==self.buttons[8].get() and self.buttons[6].get()!="-"):
-            return self.buttons[6].get()=="O"
+            if self.buttons[6].get()=="O": return 1
+            else: return -1
         if(self.buttons[0].get()==self.buttons[3].get() and self.buttons[3].get()==self.buttons[6].get() and self.buttons[0].get()!="-"):
-            return self.buttons[0].get()=="O"
+            if self.buttons[0].get()=="O": return 1
+            else: return -1
         if(self.buttons[1].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[7].get() and self.buttons[1].get()!="-"):
-            return self.buttons[1].get()=="O"
+            if self.buttons[1].get()=="O": return 1
+            else: return -1
         if(self.buttons[2].get()==self.buttons[5].get() and self.buttons[5].get()==self.buttons[8].get() and self.buttons[2].get()!="-"):
-            return self.buttons[2].get()=="O"
+            if self.buttons[2].get()=="O": return 1
+            else: return -1
         if(self.buttons[0].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[8].get() and self.buttons[0].get()!="-"):
-            return self.buttons[0].get()=="O"
+            if self.buttons[0].get()=="O": return 1
+            else: return -1
         if(self.buttons[2].get()==self.buttons[4].get() and self.buttons[4].get()==self.buttons[6].get() and self.buttons[2].get()!="-"):
-            return self.buttons[2].get()=="O"
+            if self.buttons[2].get()=="O": return 1
+            else: return -1
         for x in range(9):
             if self.buttons[x].get()=="-":
                 return
-        return 2
+        return 0
 
     def popupMsg(self,msg):
         for x in range(9):
