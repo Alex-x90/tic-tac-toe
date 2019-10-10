@@ -18,6 +18,7 @@ class myApp(tk.Tk):
         label.grid(row=0,column=0,columnspan=2)
         multiplayer.grid(row=1,column=0)
         ai.grid(row=1,column=1)
+        self.geometry("144x47+0+0")
 
     def start(self,mode):
         self.select.destroy()
@@ -33,6 +34,7 @@ class myApp(tk.Tk):
             self.buttons[x].configure(command=partial(self.press,x),font=("","75"))
             frame.grid(row=i,column=j)
             self.buttons[x].pack(fill=BOTH, expand=1)
+        self.geometry("384x384+0+0")
 
     def press(self,button):
         if self.turn==1:
@@ -45,7 +47,7 @@ class myApp(tk.Tk):
         temp = self.winCheck(self.genBoard())
         if temp==-1:
             self.popupMsg("X wins")
-        if temp:
+        if temp==1:
             self.popupMsg("O wins")
         if temp==0:
             self.popupMsg("draw")
@@ -54,37 +56,38 @@ class myApp(tk.Tk):
 
     def bestMove(self,board):
         move=None
-        score=float('-inf')
+        bestScore=-1E99
         for x in self.getMoves(board):
             tempBoard = board.copy()
             tempBoard[x]=1
-            tempScore=self.minimax(board,self.turn)
-            if tempScore>score:
+            if self.turn==1:
+                score=self.minimax(tempBoard,False)
+            else:
+                score=self.minimax(tempBoard,True)
+            if score>bestScore:
                 move=x
-                score=tempScore
+                bestScore=score
         return move
 
     def minimax(self,board,turn):
         if self.winCheck(board) != None:
             return self.winCheck(board)
-
-        move = -1
-        score = -2
-
-        moves = self.getMoves(board)
-        for x in moves:
-            tempBoard = board.copy()
-            tempBoard[x]= turn
-            tempTurn = turn*-1
-            scoreMove = -self.minimax(tempBoard,tempTurn)
-            if scoreMove>score:
-                score=scoreMove
-                move = x
-
-        if move==-1:
-            return 0
-
-        return score
+        if turn:
+            bestVal = -1E99
+            for x in self.getMoves(board):
+                tempBoard = board.copy()
+                tempBoard[x]=1
+                value=self.minimax(tempBoard,False)
+                bestVal=max(bestVal,value)
+            return bestVal
+        else:
+            bestVal = 1E99
+            for x in self.getMoves(board):
+                tempBoard = board.copy()
+                tempBoard[x]=-1
+                value=self.minimax(tempBoard,1)
+                bestVal=min(bestVal,value)
+            return bestVal
 
     def genBoard(self):
         board = [0]*9
@@ -96,22 +99,15 @@ class myApp(tk.Tk):
         return board
 
     def winCheck(self,board):
-        if(board[0]==board[1]==board[2] and board[0]!=0):
-            return board[0]
-        if(board[3]==board[4]==board[5] and board[3]!=0):
-            return board[3]
-        if(board[6]==board[7]==board[8] and board[6]!=0):
-            return board[6]
-        if(board[0]==board[3]==board[6] and board[0]!=0):
-            return board[0]
-        if(board[1]==board[4]==board[7] and board[1]!=0):
-            return board[1]
-        if(board[2]==board[5]==board[8] and board[2]!=0):
-            return board[2]
-        if(board[0]==board[4]==board[8] and board[0]!=0):
-            return board[0]
-        if(board[2]==board[4]==board[6] and board[2]!=0):
-            return board[2]
+        if(board[0]==board[1]==board[2] and board[0]!=0): return board[0]
+        if(board[3]==board[4]==board[5] and board[3]!=0): return board[3]
+        if(board[6]==board[7]==board[8] and board[6]!=0): return board[6]
+        if(board[0]==board[3]==board[6] and board[0]!=0): return board[0]
+        if(board[1]==board[4]==board[7] and board[1]!=0): return board[1]
+        if(board[2]==board[5]==board[8] and board[2]!=0): return board[2]
+        if(board[0]==board[4]==board[8] and board[0]!=0): return board[0]
+        if(board[2]==board[4]==board[6] and board[2]!=0): return board[2]
+        if not self.getMoves(board): return 0
 
     def popupMsg(self,msg):
         for x in range(9):
@@ -120,11 +116,16 @@ class myApp(tk.Tk):
         self.popup.title("Game Over")
         label = Label(self.popup, text=msg)
         label.grid(row=0,column=0,columnspan=2, pady=10)
-        B1 = Button(self.popup, text="Okay", command = self.popup.destroy)
-        B1.grid(row=1,column=0, padx=(7, 0))
+        B1 = Button(self.popup, text="Okay", command = self.exit)
         B2 = Button(self.popup, text="New game", command = self.newGame)
+        B1.grid(row=1,column=0, padx=(7, 0))
         B2.grid(row=1,column=1)
+        self.popup.geometry("120x67+0+0")
         self.popup.mainloop()
+
+    def exit(self):
+        self.popup.destroy()
+        self.destroy()
 
     def newGame(self):
         self.popup.destroy()
@@ -134,11 +135,7 @@ class myApp(tk.Tk):
             self.buttons[x].configure(state=NORMAL)
 
     def getMoves(self,board):
-        output = []
-        for x in range(9):
-            if board[x]==0:
-                output.append(x)
-        return output
+        return [x for x in range(9) if not board[x]]
 
 class custButton(tk.Button):
     def __init__(self,master=None,**kwargs):
