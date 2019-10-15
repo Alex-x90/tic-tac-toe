@@ -82,7 +82,7 @@ class myApp(tk.Tk):
                 bestScore=score
         return move
 
-    # runs minimax function and returns the second best move
+    # runs minimax function and sometimes returns the second best move
     def secondBestMove(self,board):
         move=None
         move2=None
@@ -100,6 +100,9 @@ class myApp(tk.Tk):
                 move=x
                 bestScore2=bestScore
                 bestScore=score
+            elif score>bestScore2 and score<=bestScore:
+                move2=x
+                bestScore2=score
         if move2 is None:
             return move
         if randint(0,1):

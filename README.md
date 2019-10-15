@@ -1,1 +1,3 @@
 # tic-tac-toe
+
+A simple Tic Tac Toe app using python and tkinter. Has 3 gamemodes, 1v1, easy ai, and hard ai. When a player wins (in 1v1), the ai wins (in either ai mode) or there is a draw, a popup will appear with the game status. In 1v1 making a move will swap the turns and then the next player can click a square. In the ai modes the ai will make a move right after the player makes one. The hard ai will always make the best move and will always draw or tie. The easy ai will half the time make the best decision (if it can make more than 1 move) and half the time make the second best decision. It is pretty easy to beat. Both the AIs use the minimax algorithm to determine the value of each move it can make and then decide which to do.
