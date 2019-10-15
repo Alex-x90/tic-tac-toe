@@ -8,8 +8,10 @@ class myApp(tk.Tk):
         self.title("Tic Tac Toe")
         self.resizable(width=False, height=False)
         self.buttons = {}
+        # turn -1 is first player turn, 1 is second player turn or ai turn
         self.turn = -1
 
+        # play type selection
         self.select = Frame(self)
         self.select.grid()
         label = Label(self.select,text="How do you want to play?")
@@ -23,6 +25,7 @@ class myApp(tk.Tk):
     def start(self,mode):
         self.select.destroy()
         self.mode=mode
+        # generates buttons
         for x in range(9):
             i = int(x/3)
             j = x%3
@@ -31,18 +34,21 @@ class myApp(tk.Tk):
             frame.grid(row=i,column=j)
             self.buttons[x] = custButton(frame)
             self.buttons[x].set("-")
-            self.buttons[x].configure(command=partial(self.press,x),font=("","75"))
+            self.buttons[x].config(command=partial(self.press,x),font=("","75"))
             frame.grid(row=i,column=j)
             self.buttons[x].pack(fill=BOTH, expand=1)
         self.geometry("384x384+0+0")
 
     def press(self,button):
         if self.turn==1:
-            self.buttons[button].set("O")
-            self.buttons[button].configure(state=DISABLED)
+            try:
+                self.buttons[button].set("O")
+                self.buttons[button].config(state=DISABLED)
+            except:
+                dummy=0
         else:
             self.buttons[button].set("X")
-            self.buttons[button].configure(state=DISABLED)
+            self.buttons[button].config(state=DISABLED)
         self.turn = self.turn * -1
         temp = self.winCheck(self.genBoard())
         if temp==-1:
@@ -52,8 +58,10 @@ class myApp(tk.Tk):
         if temp==0:
             self.popupMsg("draw")
         if self.mode==0 and self.turn==1:
+            # if ai is playng presses the button for the best move
             self.press(self.bestMove(self.genBoard()))
 
+    # runs minimax function on all available moves
     def bestMove(self,board):
         move=None
         bestScore=-1E99
@@ -69,6 +77,7 @@ class myApp(tk.Tk):
                 bestScore=score
         return move
 
+    # recursive function that returns the value of all possible gamestates from the inputted board
     def minimax(self,board,turn):
         if self.winCheck(board) != None:
             return self.winCheck(board)
@@ -89,13 +98,12 @@ class myApp(tk.Tk):
                 bestVal=min(bestVal,value)
             return bestVal
 
+    # generates an array to represent the game board based on the current button values
     def genBoard(self):
         board = [0]*9
         for x in range(9):
-            if(self.buttons[x].get()=="X"):
-                board[x]=-1
-            if(self.buttons[x].get()=="O"):
-                board[x]=1
+            if(self.buttons[x].get()=="X"): board[x]=-1
+            if(self.buttons[x].get()=="O"): board[x]=1
         return board
 
     def winCheck(self,board):
@@ -111,7 +119,7 @@ class myApp(tk.Tk):
 
     def popupMsg(self,msg):
         for x in range(9):
-            self.buttons[x].configure(state=DISABLED)
+            self.buttons[x].config(state=DISABLED)
         self.popup = tk.Tk()
         self.popup.title("Game Over")
         label = Label(self.popup, text=msg)
@@ -132,11 +140,13 @@ class myApp(tk.Tk):
         self.turn = -1
         for x in range(9):
             self.buttons[x].set("-")
-            self.buttons[x].configure(state=NORMAL)
+            self.buttons[x].config(state=NORMAL)
 
+    # returns an array of available moves left when given a board
     def getMoves(self,board):
         return [x for x in range(9) if not board[x]]
 
+# custom tkinter button with get and set functions
 class custButton(tk.Button):
     def __init__(self,master=None,**kwargs):
         self.var = tk.StringVar()
