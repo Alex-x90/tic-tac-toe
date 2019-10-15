@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from functools import partial
+from random import randint
 
 class myApp(tk.Tk):
     def __init__(self,*args,**kwargs):
@@ -15,12 +16,14 @@ class myApp(tk.Tk):
         self.select = Frame(self)
         self.select.grid()
         label = Label(self.select,text="How do you want to play?")
-        multiplayer = Button(self.select,text="1 vs 1",command=lambda: self.start(1))
-        ai = Button(self.select,text="vs ai",command=lambda: self.start(0))
-        label.grid(row=0,column=0,columnspan=2)
+        multiplayer = Button(self.select,text="1 vs 1",command=lambda: self.start(0))
+        aiEasy = Button(self.select,text="easy ai",command=lambda: self.start(1))
+        ai = Button(self.select,text="hard ai",command=lambda: self.start(2))
+        label.grid(row=0,column=0,columnspan=3)
         multiplayer.grid(row=1,column=0)
-        ai.grid(row=1,column=1)
-        self.geometry("144x47+0+0")
+        aiEasy.grid(row=1,column=1)
+        ai.grid(row=1,column=2)
+        self.geometry("142x47+0+0")
 
     def start(self,mode):
         self.select.destroy()
@@ -57,11 +60,13 @@ class myApp(tk.Tk):
             self.popupMsg("O wins")
         if temp==0:
             self.popupMsg("draw")
-        if self.mode==0 and self.turn==1:
+        if self.mode==2 and self.turn==1:
             # if ai is playng presses the button for the best move
             self.press(self.bestMove(self.genBoard()))
+        if self.mode==1 and self.turn==1:
+            self.press(self.secondBestMove(self.genBoard()))
 
-    # runs minimax function on all available moves
+    # runs minimax function on all available moves and returns the best one
     def bestMove(self,board):
         move=None
         bestScore=-1E99
@@ -76,6 +81,31 @@ class myApp(tk.Tk):
                 move=x
                 bestScore=score
         return move
+
+    # runs minimax function and returns the second best move
+    def secondBestMove(self,board):
+        move=None
+        move2=None
+        bestScore=-1E99
+        bestScore2=-1E99
+        for x in self.getMoves(board):
+            tempBoard = board.copy()
+            tempBoard[x]=1
+            if self.turn==1:
+                score=self.minimax(tempBoard,False)
+            else:
+                score=self.minimax(tempBoard,True)
+            if score>bestScore:
+                move2=move
+                move=x
+                bestScore2=bestScore
+                bestScore=score
+        if move2 is None:
+            return move
+        if randint(0,1):
+            return move2
+        else:
+            return move
 
     # recursive function that returns the value of all possible gamestates from the inputted board
     def minimax(self,board,turn):
