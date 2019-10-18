@@ -77,10 +77,10 @@ class myApp(tk.Tk):
             tempBoard,tempBoard[x] = board.copy(),1
             score = self.minimax(tempBoard,self.turn!=1)
             if score>bestScore:
-                move2,move,bestScore2,bestScore=move,x,bestScore,score
+                move2,bestScore2,move,bestScore=move,bestScore,x,score
             elif score>bestScore2 and score<=bestScore:
                 move2,bestScore2=x,score
-        if randint(0,1) and move2 is not None: return move
+        if randint(0,1) and move2 is not None: return move2
         else: return move
 
     # recursive function that returns the value of all possible gamestates from the inputted board
