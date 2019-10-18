@@ -8,10 +8,10 @@ class myApp(tk.Tk):
         tk.Tk.__init__(self,*args,**kwargs)
         self.title("Tic Tac Toe")
         self.resizable(width=False, height=False)
+        self.geometry("142x47+0+0")
         self.buttons = {}
         # turn -1 is first player turn, 1 is second player turn or ai turn
         self.turn = -1
-
         # play type selection
         self.select = Frame(self)
         self.select.grid()
@@ -23,24 +23,20 @@ class myApp(tk.Tk):
         multiplayer.grid(row=1,column=0)
         aiEasy.grid(row=1,column=1)
         ai.grid(row=1,column=2)
-        self.geometry("142x47+0+0")
 
     def start(self,mode):
         self.select.destroy()
         self.mode=mode
+        self.geometry("384x384+0+0")
         # generates buttons
         for x in range(9):
-            i = int(x/3)
-            j = x%3
-            frame = Frame(root,height=128,width=128)
+            frame = Frame(self,height=128,width=128)
             frame.pack_propagate(0)
-            frame.grid(row=i,column=j)
+            frame.grid(row=int(x/3),column=x%3)
             self.buttons[x] = custButton(frame)
             self.buttons[x].set("-")
             self.buttons[x].config(command=partial(self.press,x),font=("","75"))
-            frame.grid(row=i,column=j)
             self.buttons[x].pack(fill=BOTH, expand=1)
-        self.geometry("384x384+0+0")
 
     def press(self,button):
         if self.turn==1:
@@ -54,81 +50,53 @@ class myApp(tk.Tk):
             self.buttons[button].config(state=DISABLED)
         self.turn = self.turn * -1
         temp = self.winCheck(self.genBoard())
-        if temp==-1:
-            self.popupMsg("X wins")
-        if temp==1:
-            self.popupMsg("O wins")
-        if temp==0:
-            self.popupMsg("draw")
-        if self.mode==2 and self.turn==1:
+        if temp==-1: self.popupMsg("X wins")
+        elif temp==1: self.popupMsg("O wins")
+        elif temp==0: self.popupMsg("Draw")
+        elif self.mode==2 and self.turn==1:
             # if ai is playng presses the button for the best move
             self.press(self.bestMove(self.genBoard()))
-        if self.mode==1 and self.turn==1:
+        elif self.mode==self.turn==1:
             self.press(self.secondBestMove(self.genBoard()))
 
     # runs minimax function on all available moves and returns the best one
     def bestMove(self,board):
-        move=None
-        bestScore=-1E99
+        move,bestScore=None,-1E99
         for x in self.getMoves(board):
-            tempBoard = board.copy()
-            tempBoard[x]=1
-            if self.turn==1:
-                score=self.minimax(tempBoard,False)
-            else:
-                score=self.minimax(tempBoard,True)
+            tempBoard,tempBoard[x] = board.copy(),1
+            score = self.minimax(tempBoard,self.turn!=1)
             if score>bestScore:
-                move=x
-                bestScore=score
+                move,bestScore=x,score
         return move
 
     # runs minimax function and sometimes returns the second best move
     def secondBestMove(self,board):
-        move=None
-        move2=None
-        bestScore=-1E99
-        bestScore2=-1E99
+        move=move2=None
+        bestScore=bestScore2=-1E99
         for x in self.getMoves(board):
-            tempBoard = board.copy()
-            tempBoard[x]=1
-            if self.turn==1:
-                score=self.minimax(tempBoard,False)
-            else:
-                score=self.minimax(tempBoard,True)
+            tempBoard,tempBoard[x] = board.copy(),1
+            score = self.minimax(tempBoard,self.turn!=1)
             if score>bestScore:
-                move2=move
-                move=x
-                bestScore2=bestScore
-                bestScore=score
+                move2,move,bestScore2,bestScore=move,x,bestScore,score
             elif score>bestScore2 and score<=bestScore:
-                move2=x
-                bestScore2=score
-        if move2 is None:
-            return move
-        if randint(0,1):
-            return move2
-        else:
-            return move
+                move2,bestScore2=x,score
+        if randint(0,1) and move2 is not None: return move
+        else: return move
 
     # recursive function that returns the value of all possible gamestates from the inputted board
     def minimax(self,board,turn):
         if self.winCheck(board) != None:
             return self.winCheck(board)
+        bestVal = pow(-1,turn)*1E99
         if turn:
-            bestVal = -1E99
             for x in self.getMoves(board):
-                tempBoard = board.copy()
-                tempBoard[x]=1
-                value=self.minimax(tempBoard,False)
-                bestVal=max(bestVal,value)
+                tempBoard,tempBoard[x] = board.copy(),1
+                bestVal=max(bestVal,self.minimax(tempBoard,False))
             return bestVal
         else:
-            bestVal = 1E99
             for x in self.getMoves(board):
-                tempBoard = board.copy()
-                tempBoard[x]=-1
-                value=self.minimax(tempBoard,1)
-                bestVal=min(bestVal,value)
+                tempBoard,tempBoard[x] = board.copy(),-1
+                bestVal=min(bestVal,self.minimax(tempBoard,True))
             return bestVal
 
     # generates an array to represent the game board based on the current button values
@@ -153,20 +121,16 @@ class myApp(tk.Tk):
     def popupMsg(self,msg):
         for x in range(9):
             self.buttons[x].config(state=DISABLED)
-        self.popup = tk.Tk()
+        self.popup = Toplevel(self)
         self.popup.title("Game Over")
+        self.popup.resizable(width=False, height=False)
+        self.popup.geometry("120x67+0+0")
         label = Label(self.popup, text=msg)
         label.grid(row=0,column=0,columnspan=2, pady=10)
-        B1 = Button(self.popup, text="Okay", command = self.exit)
+        B1 = Button(self.popup, text="Okay", command = self.destroy)
         B2 = Button(self.popup, text="New game", command = self.newGame)
         B1.grid(row=1,column=0, padx=(7, 0))
         B2.grid(row=1,column=1)
-        self.popup.geometry("120x67+0+0")
-        self.popup.mainloop()
-
-    def exit(self):
-        self.popup.destroy()
-        self.destroy()
 
     def newGame(self):
         self.popup.destroy()
