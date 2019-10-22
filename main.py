@@ -8,7 +8,7 @@ class myApp(tk.Tk):
         tk.Tk.__init__(self,*args,**kwargs)
         self.title("Tic Tac Toe")
         self.resizable(width=False, height=False)
-        self.geometry("142x47+0+0")
+        self.geometry("142x47+-6+0")
         self.buttons = {}
         # turn -1 is first player turn, 1 is second player turn or ai turn
         self.turn = -1
@@ -27,7 +27,7 @@ class myApp(tk.Tk):
     def start(self,mode):
         self.select.destroy()
         self.mode=mode
-        self.geometry("384x384+0+0")
+        self.geometry("384x384+-6+0")
         # generates buttons
         for x in range(9):
             frame = Frame(self,height=128,width=128)
@@ -124,7 +124,7 @@ class myApp(tk.Tk):
         self.popup = Toplevel(self)
         self.popup.title("Game Over")
         self.popup.resizable(width=False, height=False)
-        self.popup.geometry("120x67+0+0")
+        self.popup.geometry("120x67+-6+0")
         label = Label(self.popup, text=msg)
         label.grid(row=0,column=0,columnspan=2, pady=10)
         B1 = Button(self.popup, text="Okay", command = self.destroy)
